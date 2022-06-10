@@ -61,12 +61,12 @@ app.post('/docxtopdf',docxtopdfupload.single('file'),(req,res) => {
     
             const docxBuf = fs.readFileSync(inputPath);
 
-            libre.convert(docxBuf, ext, undefined, (err, done)=>{
+            pdfbuf = libre.convert(docxBuf, ext, undefined);
                 if(err){
                         fs.unlinkSync(req.file.path)    
                         res.send("some error taken place in conversion process")
                     }
-                    fs.writeFileSync(outputPath, done);
+                    fs.writeFileSync(outputPath, pdfbuf);
 
 
                     res.download(outputPath,(err) => {
@@ -80,10 +80,11 @@ app.post('/docxtopdf',docxtopdfupload.single('file'),(req,res) => {
                         fs.unlinkSync(req.file.path)
                         fs.unlinkSync(outputPath)
                       });
-                });
-        
-    }
+                }
 });
+        
+    
+
 
 
     
