@@ -30,6 +30,7 @@
     "pdf-merge": "^1.2.0",
     "pdfkit": "^0.13.0",
     "socket.io": "^4.5.1",
+    "util": "^0.12.4",
     "webkit": "0.0.0",
     "webp-converter": "^2.3.3",
     "whois-json": "^2.0.4",

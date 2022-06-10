@@ -14,6 +14,7 @@ app.use(express.static("public"));
 app.use(expressLayouts);
 app.set('view engine','ejs');
 var PORT = process.env.PORT || 3000;
+libre.convertAsync = require('util').promisify(libre.convert);
 
 app.get("/",(req, res)=>{
     res.render("services");
@@ -52,34 +53,60 @@ const docxtopdfupload = multer({storage:storage,fileFilter:docxtopdf});
 
 app.post('/docxtopdf',docxtopdfupload.single('file'),(req,res) => {
     if(req.file){
-        console.log(req.file.path)
     
-        const file = fs.readFileSync(req.file.path);
-    
-        outputFilePath = Date.now() + "output.pdf" 
-    
-        libre.convert(file,".pdf",undefined,(err,done) => {
-          if(err){
-            fs.unlinkSync(req.file.path)    
-            res.send("some error taken place in conversion process")
-          }
-    
-          fs.writeFileSync(outputFilePath.toString(), done);
-    
-          res.download(outputFilePath,(err) => {
+        async function main() {
+            const ext = '.pdf'
+            const inputPath = req.file.path
+            const outputPath = path.join(__dirname, `/public/uploads/output${ext}`);
+        
+            // Read file
+            const docxBuf = await fs.readFile(inputPath);
+        
+            // Convert it to pdf format with undefined filter (see Libreoffice docs about filter)
+            let pdfBuf = await libre.convertAsync(docxBuf, ext, undefined);
+            
+            // Here in done you have pdf file which you can save or transfer in another stream
+            await fs.writeFile(outputPath, pdfBuf);
+        
+
+        res.download(outputPath,(err) => {
             if(err){
               fs.unlinkSync(req.file.path)
-            fs.unlinkSync(outputFilePath)
+            fs.unlinkSync(outputPath)
     
             res.send("some error taken place in downloading the file")
             }
     
             fs.unlinkSync(req.file.path)
-            fs.unlinkSync(outputFilePath)
+            fs.unlinkSync(outputPath)
           });
+        }
+
+
+
+    
+        // libre.convert(file,".pdf",undefined,(err,done) => {
+        //   if(err){
+        //     fs.unlinkSync(req.file.path)    
+        //     res.send("some error taken place in conversion process")
+        //   }
+    
+        //   fs.writeFileSync(outputFilePath, done);
+    
+        //   res.download(outputFilePath,(err) => {
+        //     if(err){
+        //       fs.unlinkSync(req.file.path)
+        //     fs.unlinkSync(outputFilePath)
+    
+        //     res.send("some error taken place in downloading the file")
+        //     }
+    
+        //     fs.unlinkSync(req.file.path)
+        //     fs.unlinkSync(outputFilePath)
+        //   });
     
     
-        });
+        // });
     };
 });
 
