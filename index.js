@@ -23,10 +23,8 @@ app.use(bodyParser.json());
 app.use(express.static("public"));
 app.use(expressLayouts);
 app.set('view engine','ejs');
-var https = require('https')
-var http = require('http')
-http.createServer(app).listen(80)
-https.createServer(options, app).listen(443)
+var https = require('https');
+var http = require('http');
 var PORT = process.env.PORT || 3000;
 
 app.get('/',(req, res)=>{
