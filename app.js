@@ -59,9 +59,9 @@ app.post('/docxtopdf',docxtopdfupload.single('file'),(req,res) => {
             const inputPath = req.file.path
             const outputPath = Date.now() + "output.pdf"
     
-            const docxBuf = await fs.readFile(inputPath);
-            let pdfBuf = await libre.convertAsync(docxBuf, ext, undefined);
-            await fs.writeFileSync(outputPath, pdfBuf);
+            const docxBuf = fs.readFile(inputPath);
+            let pdfBuf = libre.convertAsync(docxBuf, ext, undefined);
+            fs.writeFileSync(outputPath, pdfBuf);
 
 
         
