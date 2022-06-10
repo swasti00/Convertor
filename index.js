@@ -1,4 +1,3 @@
-var https = require('https');
 const fs = require('fs');
 const bodyParser = require("body-parser");
 const libre = require('libreoffice-convert');
@@ -25,8 +24,30 @@ app.use(express.static("public"));
 app.use(expressLayouts);
 app.set('view engine','ejs');
 
+const http = require('http');
+const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || 'localhost';
 
-var port = process.env.PORT || 8080;
+var options = {
+  hostname: HOST,
+  port: PORT,
+  path: '?invalid=request', // This will trigger a client error and cause an H13
+  method: 'GET'
+};
+
+var req = http.request(options, (res) => {
+  console.log(`STATUS: ${res.statusCode}`);
+  console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+  res.setEncoding('utf8');
+  res.on('data', (chunk) => {
+    console.log(`BODY: ${chunk}`);
+  });
+  res.on('end', () => {
+    console.log('No more data in response.')
+  })
+});
+
+
 
 app.get('/',(req, res)=>{
     res.render('services');
@@ -469,8 +490,9 @@ app.post('/htmltopdf',(req,res)=>{
   });
 });
 
+req.on('error', (e) => {
+  console.log(`problem with request: ${e.message}`);
+});
 
-
-
-app.listen(port, () => console.log("App listening ${port}!"));
+req.end();
 
