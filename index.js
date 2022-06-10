@@ -1,4 +1,4 @@
-
+var http = require('http');
 const fs = require('fs');
 const bodyParser = require("body-parser");
 const libre = require('libreoffice-convert');
