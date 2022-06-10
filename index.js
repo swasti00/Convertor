@@ -23,28 +23,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static("public"));
 app.use(expressLayouts);
-app.set('view engine','ejs')
-var cors = require("cors");
-const { Socket } = require('engine.io');
+app.set('view engine','ejs');
 
-var credentials = {
-  key: fs.readFileSync("./cert/key.key"),
-  cert: fs.readFileSync("./cert/cert.crt"),
-  ca: fs.readFileSync("./cert/bundle.crt"),
-  requestCert: true,
-  rejectUnauthorized: false
-};
-var server = https.createServer(credentials, app);
-var io = require('socket.io')(server);
-
-app.use(cors());
-
-io.on('connection', function(data){
-  console.log(socket);
-  socket.on('authenticate', function(data){
-    console.log(data);
-  });
-});
 
 var port = process.env.PORT || 8080;
 
@@ -492,7 +472,5 @@ app.post('/htmltopdf',(req,res)=>{
 
 
 
-server.listen(port, function(err)  {
-  console.log("server listen at", this.address());
-});
+app.listen(port, () => console.log("App listening ${port}!"));
 
