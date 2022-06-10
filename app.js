@@ -55,7 +55,7 @@ app.post('/docxtopdf',docxtopdfupload.single('file'),(req,res) => {
     if(req.file){
         const ext = '.pdf'
             const inputPath = req.file.path
-            const outputPath = path.join(__dirname, `/public/uploads/output${ext}`);
+            const outputPath = path.join(__dirname, `/public/output${ext}`);
     
         async function main() {      
         
@@ -66,7 +66,7 @@ app.post('/docxtopdf',docxtopdfupload.single('file'),(req,res) => {
             let pdfBuf = await libre.convertAsync(docxBuf, ext, undefined);
             
             // Here in done you have pdf file which you can save or transfer in another stream
-            await fs.writeFile(outputPath, pdfBuf);
+            await fs.writeFileSync(outputPath, pdfBuf);
             }
 
         main().catch(function (err) {
