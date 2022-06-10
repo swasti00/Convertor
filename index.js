@@ -1,5 +1,4 @@
 
-const http = require('http');
 const fs = require('fs');
 const bodyParser = require("body-parser");
 const libre = require('libreoffice-convert');
@@ -7,29 +6,19 @@ const path = require("path");
 const multer = require("multer");
 const pdfMerge = require('easy-pdf-merge');
 const webp=require('webp-converter');
-var flatten = require('flat');
 var outputFilePath;
 const express = require('express');
-var createError = require('http-errors')
 const expressLayouts = require('express-ejs-layouts');
-const { response } = require('express');
-var isjson = require('is-json');
 var json2xlsx = require('json2xls');
 const pdf = require('html-pdf');
-const XLSX = require('xlsx');
-var xtend = require("xtend");
+
 var convert = require("ebook-convert");
-const emailvalidator = require("email-validator");
 const whoisinfo = require("whois-json");
 const moment = require("moment");
 const isValidDomain = require("is-valid-domain");
 const { exec } = require("child_process");
-const { json } = require('express/lib/response');
 const res = require('express/lib/response');
-const { stdout, stderr, send } = require('process');
 const app = express();
-const PDFDocument = require("pdfkit");
-const port = 5000
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static("public"));
@@ -37,7 +26,7 @@ app.use(expressLayouts);
 app.set('view engine','ejs')
 
 app.get('/',(req, res)=>{
-    res.render('services',{title:'Multi Media'})
+    res.render('services');
 });
 
 var storage = multer.diskStorage({
@@ -480,4 +469,6 @@ app.post('/htmltopdf',(req,res)=>{
 
 
 
-app.listen(process.env.port, () => console.info('App listening at port 5000'));
+app.listen(process.env.PORT || 3000, function(){
+  console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
+});
