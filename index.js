@@ -123,32 +123,37 @@ app.get('/mergepdf',(req, res)=>{
 
 
 app.post('/mergepdf',mergepdffilesupload.array('files',100),(req,res) => {
-    const lists = []
+    const list = []
     outputFilePath = Date.now() + "output.pdf"
     if(req.files){
       req.files.forEach(file => {
-        lists.push(file.path)
+        list.push(file.path)
       });
     
     
-    pdfMerge(lists, {output:outputFilePath})
-    .then((buffer) => {
-        res.download(outputFilePath,(err) => {
-          if(err){
-            fs.unlinkSync(outputFilePath)
-            res.send("Some error takes place in downloading the file")
-          }
-          fs.unlinkSync(outputFilePath)
-        })
-      })
-      .catch((err) => {
+    pdfMerge(list, outputFilePath, function(err){
+      if(err){
+        fs.unlinkSync(outputFilePath)
+        res.send("Some error takes place.")
+      }
+      res.download(outputFilePath,(err) => {
         if(err){
-          fs.unlinkSync(outputFilePath)
-          res.send("Some error takes place in merging the pdf file")
+          req.files.forEach(file => {
+            fs.unlinkSync(file.path)
+          });
+        fs.unlinkSync(outputFilePath)
+        res.send(err)
         }
+        req.files.forEach(file => {
+          fs.unlinkSync(file.path)
+        });
+        fs.unlinkSync(outputFilePath)
+        res.send(err)
       })
-  }
-})
+    });
+  }}
+);
+  
 
 app.get('/webpconvert',(req,res) => {
   res.render("webpconvert",{title:'Convert to Webp'})
