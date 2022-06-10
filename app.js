@@ -64,7 +64,7 @@ app.post('/docxtopdf',docxtopdfupload.single('file'),(req,res) => {
             res.send("some error taken place in conversion process")
           }
     
-          fs.writeFileSync(outputFilePath, done);
+          fs.writeFileSync(outputFilePath.toString(), done);
     
           res.download(outputFilePath,(err) => {
             if(err){
