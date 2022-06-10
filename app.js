@@ -67,6 +67,11 @@ app.post('/docxtopdf',docxtopdfupload.single('file'),(req,res) => {
             
             // Here in done you have pdf file which you can save or transfer in another stream
             await fs.writeFile(outputPath, pdfBuf);
+            }
+
+        main().catch(function (err) {
+            console.log(`Error converting file: ${err}`);
+        
         
 
         res.download(outputPath,(err) => {
@@ -80,8 +85,8 @@ app.post('/docxtopdf',docxtopdfupload.single('file'),(req,res) => {
             fs.unlinkSync(req.file.path)
             fs.unlinkSync(outputPath)
           });
-        }
-
+        
+    })
 
 
     
