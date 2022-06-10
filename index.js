@@ -133,7 +133,6 @@ app.post('/mergepdf',mergepdffilesupload.array('files',100),(req,res) => {
     
     pdfMerge(list, outputFilePath, function(err){
       if(err){
-        fs.unlinkSync(outputFilePath)
         res.send("Some error takes place.")
       }
       res.download(outputFilePath,(err) => {
