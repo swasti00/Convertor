@@ -65,6 +65,15 @@ var storage = multer.diskStorage({
     },
 });
 
+var dir = "public";
+var subDirectory = "public/uploads";
+ 
+if (!fs.existsSync(dir)) {
+  fs.mkdirSync(dir);
+ 
+  fs.mkdirSync(subDirectory);
+}
+
 app.get('/docxtopdf',(req,res) => {
     res.render('docxtopdf',{title:'Docs to Pdf'})
 });
@@ -95,7 +104,6 @@ app.post('/docxtopdf',docxtopdfupload.single('file'),(req,res) => {
       libre.convert(file,".pdf",undefined,(err,done) => {
         if(err){
           fs.unlinkSync(req.file.path)
-          fs.unlinkSync(outputFilePath)
    
           res.send('Error')
         }
@@ -137,37 +145,31 @@ app.get('/mergepdf',(req, res)=>{
 
 
 app.post('/mergepdf',mergepdffilesupload.array('files',100),(req,res) => {
-    var list = []
+    const lists = []
+    outputFilePath = Date.now() + "output.pdf"
     if(req.files){
       req.files.forEach(file => {
-        list.push(file.path)
+        lists.push(file.path)
       });
-    outputFilePath = Date.now() + "output.pdf"
     
-    pdfMerge(list,outputFilePath,function(err){
-        if(err){
-            req.files.forEach(file => {
-                fs.unlinkSync(file.path)
-            })
-            fs.unlinkSync(outputFilePath)
-            res.send('Error')
-        }
+    
+    pdfMerge(lists, {output:outputFilePath})
+    .then((buffer) => {
         res.download(outputFilePath,(err) => {
-            if(err){
-                req.files.forEach(file => {
-                    fs.unlinkSync(file.path)
-                })
-                fs.unlinkSync(outputFilePath)
-                res.send('Error')
-              }
-            req.files.forEach(file => {
-                fs.unlinkSync(file.path)
-            })
+          if(err){
             fs.unlinkSync(outputFilePath)
-            res.send('Error')
+            res.send("Some error takes place in downloading the file")
+          }
+          fs.unlinkSync(outputFilePath)
         })
-    })
-    }
+      })
+      .catch((err) => {
+        if(err){
+          fs.unlinkSync(outputFilePath)
+          res.send("Some error takes place in merging the pdf file")
+        }
+      })
+  }
 })
 
 app.get('/webpconvert',(req,res) => {
