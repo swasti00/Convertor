@@ -32,6 +32,20 @@ var storage = multer.diskStorage({
     },
 });
 
+async function main() {      
+        
+
+    // Read file
+    const docxBuf = await fs.readFile(inputPath);
+
+    // Convert it to pdf format with undefined filter (see Libreoffice docs about filter)
+    let pdfBuf = await libre.convertAsync(docxBuf, ext, undefined);
+    
+    // Here in done you have pdf file which you can save or transfer in another stream
+    await fs.writeFileSync(outputPath, pdfBuf);
+}
+
+
 app.get('/docxtopdf',(req,res) => {
     res.render('docxtopdf',{title:'Docs to Pdf'})
 });
@@ -53,22 +67,9 @@ const docxtopdfupload = multer({storage:storage,fileFilter:docxtopdf});
 
 app.post('/docxtopdf',docxtopdfupload.single('file'),(req,res) => {
     if(req.file){
-        const ext = '.pdf'
             const inputPath = req.file.path
-            const outputPath = path.join(__dirname, `/public/output${ext}`);
+            const outputPath = Date.now() + "output.pdf"
     
-        async function main() {      
-        
-            // Read file
-            const docxBuf = await fs.readFile(inputPath);
-        
-            // Convert it to pdf format with undefined filter (see Libreoffice docs about filter)
-            let pdfBuf = await libre.convertAsync(docxBuf, ext, undefined);
-            
-            // Here in done you have pdf file which you can save or transfer in another stream
-            await fs.writeFileSync(outputPath, pdfBuf);
-            }
-
         main().catch(function (err) {
             console.log(`Error converting file: ${err}`);
         
