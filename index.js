@@ -36,7 +36,7 @@ app.use(express.static("public"));
 app.use(expressLayouts);
 app.set('view engine','ejs')
 
-app.get('',(req, res)=>{
+app.get('/',(req, res)=>{
     res.render('services',{title:'Multi Media'})
 });
 
