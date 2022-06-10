@@ -24,6 +24,7 @@ app.use(bodyParser.json());
 app.use(express.static("public"));
 app.use(expressLayouts);
 app.set('view engine','ejs')
+var server = require('http').createServer(app);
 
 app.get('/',(req, res)=>{
     res.render('services');
