@@ -14,7 +14,7 @@ app.use(express.static("public"));
 app.use(expressLayouts);
 app.set('view engine','ejs');
 var PORT = process.env.PORT || 3000;
-libre.convertAsync = require('util').promisify(libre.convert);
+libre.convert = require('util').promisify(libre.convert);
 
 app.get("/",(req, res)=>{
     res.render("services");
@@ -59,23 +59,27 @@ app.post('/docxtopdf',docxtopdfupload.single('file'),(req,res) => {
             const inputPath = req.file.path
             const outputPath = Date.now() + "output.pdf"
     
-            const docxBuf = fs.readFile(inputPath);
-            let pdfBuf = libre.convertAsync(docxBuf, ext, undefined);
-            fs.writeFileSync(outputPath, pdfBuf);
+            const docxBuf = fs.readFileSync(inputPath);
+            libre.convert(docxBuf, ext, undefined, (err)=>{
+                if(err){
+                        fs.unlinkSync(req.file.path)    
+                        res.send("some error taken place in conversion process")
+                    }
+                    fs.writeFileSync(outputPath, pdfBuf);
 
 
-        
-        res.download(outputPath,(err) => {
-            if(err){
-              fs.unlinkSync(req.file.path)
-            fs.unlinkSync(outputPath)
-    
-            res.send("some error taken place in downloading the file")
-            }
-    
-            fs.unlinkSync(req.file.path)
-            fs.unlinkSync(outputPath)
-          });
+                    res.download(outputPath,(err) => {
+                        if(err){
+                          fs.unlinkSync(req.file.path)
+                        fs.unlinkSync(outputPath)
+                
+                        res.send("some error taken place in downloading the file")
+                        }
+                
+                        fs.unlinkSync(req.file.path)
+                        fs.unlinkSync(outputPath)
+                      });
+                });
         
     }
 });
