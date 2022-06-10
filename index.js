@@ -1,4 +1,4 @@
-var http = require('http');
+var https = require('https');
 const fs = require('fs');
 const bodyParser = require("body-parser");
 const libre = require('libreoffice-convert');
@@ -19,12 +19,34 @@ const isValidDomain = require("is-valid-domain");
 const { exec } = require("child_process");
 const res = require('express/lib/response');
 const app = express();
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static("public"));
 app.use(expressLayouts);
 app.set('view engine','ejs')
-var server = require('http').createServer(app);
+var cors = require("cors");
+const { Socket } = require('engine.io');
+
+var credentials = {
+  key: fs.readFileSync("./cert/key.key"),
+  cert: fs.readFileSync("./cert/cert.crt"),
+  ca: fs.readFileSync("./cert/bundle.crt"),
+  requestCert: true,
+  rejectUnauthorized: false
+};
+var server = https.createServer(credentials, app);
+var io = require('socket.io')(server);
+
+app.use(cors());
+
+io.on('connection', function(data){
+  console.log(socket);
+  socket.on('authenticate', function(data){
+    console.log(data);
+  });
+});
+
+var port = process.env.PORT || 8080;
 
 app.get('/',(req, res)=>{
     res.render('services');
@@ -470,6 +492,7 @@ app.post('/htmltopdf',(req,res)=>{
 
 
 
-app.listen(process.env.PORT || 3000, function(){
-  console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
+server.listen(port, function(err)  {
+  console.log("server listen at", this.address());
 });
+

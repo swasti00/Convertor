@@ -5,6 +5,7 @@
   "dependencies": {
     "alert": "^5.0.11",
     "body-parser": "^1.20.0",
+    "cors": "^2.8.5",
     "docx-merger": "^1.2.2",
     "easy-pdf-merge": "^0.2.6",
     "ebook-convert": "^2.0.1",
@@ -26,6 +27,7 @@
     "nodemon": "^2.0.16",
     "pdf-merge": "^1.2.0",
     "pdfkit": "^0.13.0",
+    "socket.io": "^4.5.1",
     "webkit": "0.0.0",
     "webp-converter": "^2.3.3",
     "whois-json": "^2.0.4",
