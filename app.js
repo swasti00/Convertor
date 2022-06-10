@@ -53,11 +53,11 @@ const docxtopdfupload = multer({storage:storage,fileFilter:docxtopdf});
 
 app.post('/docxtopdf',docxtopdfupload.single('file'),(req,res) => {
     if(req.file){
-    
-        async function main() {
-            const ext = '.pdf'
+        const ext = '.pdf'
             const inputPath = req.file.path
             const outputPath = path.join(__dirname, `/public/uploads/output${ext}`);
+    
+        async function main() {      
         
             // Read file
             const docxBuf = await fs.readFile(inputPath);
@@ -72,8 +72,6 @@ app.post('/docxtopdf',docxtopdfupload.single('file'),(req,res) => {
         main().catch(function (err) {
             console.log(`Error converting file: ${err}`);
         
-        
-
         res.download(outputPath,(err) => {
             if(err){
               fs.unlinkSync(req.file.path)
