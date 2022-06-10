@@ -134,6 +134,7 @@ app.post('/mergepdf',mergepdffilesupload.array('files',100),(req,res) => {
     pdfMerge(list, outputFilePath, function(err){
       if(err){
         res.send("Some error takes place.")
+        console.log(err)
       }
       res.download(outputFilePath,(err) => {
         if(err){
