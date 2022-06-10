@@ -60,9 +60,7 @@ app.post('/docxtopdf',docxtopdfupload.single('file'),(req,res) => {
     
         libre.convert(file,".pdf",undefined,(err,done) => {
           if(err){
-            fs.unlinkSync(req.file.path)
-            fs.unlinkSync(outputFilePath)
-    
+            fs.unlinkSync(req.file.path)    
             res.send("some error taken place in conversion process")
           }
     
