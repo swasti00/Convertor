@@ -26,6 +26,7 @@ app.set('view engine','ejs');
 var https = require('https');
 var http = require('http');
 var PORT = process.env.PORT || 3000;
+libre.convert = require('util').promisify(libre.convert);
 
 app.get('/',(req, res)=>{
     res.render('services');
@@ -53,58 +54,55 @@ if (!fs.existsSync(dir)) {
 }
 
 app.get('/docxtopdf',(req,res) => {
-    res.render('docxtopdf',{title:'Docs to Pdf'})
+  res.render('docxtopdf',{title:'Docs to Pdf'})
 });
-   
+ 
 const docxtopdf = function (req, file, callback) {
-    var ext = path.extname(file.originalname);
-    if (
-      ext !== ".docx" &&
-      ext !== ".doc"
-    ) {
-      return callback('The extension is not supported.');
+  var ext = path.extname(file.originalname);
+  if (
+    ext !== ".docx" &&
+    ext !== ".doc"
+  ) {
+    return callback('The extension is not supported.');
+   
      
-       
-    }
-    callback(null, true);
+  }
+  callback(null, true);
 };
 
-const docxtopdfupload = multer({storage:storage,fileFilter:docxtopdf})
+const docxtopdfupload = multer({storage:storage,fileFilter:docxtopdf});
 
 app.post('/docxtopdf',docxtopdfupload.single('file'),(req,res) => {
+  if(req.file){
+      const ext = '.pdf'
+          const inputPath = req.file.path
+          const outputPath = Date.now() + "output.pdf"
+  
+          const docxBuf = fs.readFileSync(inputPath);
 
-    if(req.file){
-   
-      const file = fs.readFileSync(req.file.path);
-   
-      outputFilePath = Date.now() + "output.pdf"
-   
-      libre.convert(file,".pdf",undefined,(err,done) => {
-        if(err){
-          fs.unlinkSync(req.file.path)
-   
-          res.send('Error')
-        }
-   
-        fs.writeFileSync(outputFilePath, done);
-   
-        res.download(outputFilePath,(err) => {
-          if(err){
-            fs.unlinkSync(req.file.path)
-          fs.unlinkSync(outputFilePath)
-   
-          res.send('Error')
-          }
-   
-          fs.unlinkSync(req.file.path)
-          fs.unlinkSync(outputFilePath)
-        })
-   
-   
-      })
-    }
-  })
+          pdfbuf = libre.convert(docxBuf, ext, undefined);
+              if(err){
+                      fs.unlinkSync(req.file.path)    
+                      res.send("some error taken place in conversion process")
+                  }
+                  fs.writeFileSync(outputPath, pdfbuf);
 
+
+                  res.download(outputPath,(err) => {
+                      if(err){
+                        fs.unlinkSync(req.file.path)
+                      fs.unlinkSync(outputPath)
+              
+                      res.send("some error taken place in downloading the file")
+                      }
+              
+                      fs.unlinkSync(req.file.path)
+                      fs.unlinkSync(outputPath)
+                    });
+              }
+});
+      
+  
 const mergepdffilter = function(req,file,callback){
     var ext = path.extname(file.originalname);
     if (
