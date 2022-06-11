@@ -86,31 +86,4 @@ app.post('/docxtopdf',docxtopdfupload.single('file'),(req,res) => {
     
 
 
-
-    
-        // libre.convert(file,".pdf",undefined,(err,done) => {
-        //   if(err){
-        //     fs.unlinkSync(req.file.path)    
-        //     res.send("some error taken place in conversion process")
-        //   }
-    
-        //   fs.writeFileSync(outputFilePath, done);
-    
-        //   res.download(outputFilePath,(err) => {
-        //     if(err){
-        //       fs.unlinkSync(req.file.path)
-        //     fs.unlinkSync(outputFilePath)
-    
-        //     res.send("some error taken place in downloading the file")
-        //     }
-    
-        //     fs.unlinkSync(req.file.path)
-        //     fs.unlinkSync(outputFilePath)
-        //   });
-    
-    
-        // });
-    
-
-
 app.listen(PORT, () => console.log("Port is listening..."));
