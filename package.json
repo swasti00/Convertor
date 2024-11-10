@@ -38,7 +38,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "node index.js"
+    "start": "node app.js"
   },
   "author": "Swasti",
   "license": "ISC",
